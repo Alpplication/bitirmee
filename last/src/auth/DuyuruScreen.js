@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View, SafeAreaView, TextInput, FlatList } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
+import WeeklyCalendar from 'react-native-weekly-calendar';
+//import { LocaleConfig, Calendar  } from 'react-native-calendars';
+
 
 import firebase from 'firebase'
 import "firebase/database"
@@ -15,8 +18,21 @@ export class User extends Component {
         this.state = {
             notices:[],
             text:'',
+            sampleEvents: [
+                { 'start': '2020-03-23 09:00:00', 'duration': '00:20:00', 'note': 'Walk my dog' },
+                { 'start': '2020-03-24 14:00:00', 'duration': '01:00:00', 'note': 'Doctor\'s appointment' },
+                { 'start': '2020-03-25 08:00:00', 'duration': '00:30:00', 'note': 'Morning exercise' },
+                { 'start': '2020-03-25 14:00:00', 'duration': '02:00:00', 'note': 'Meeting with client' },
+                { 'start': '2020-03-25 19:00:00', 'duration': '01:00:00', 'note': 'Dinner with family' },
+                { 'start': '2020-03-26 09:30:00', 'duration': '01:00:00', 'note': 'Schedule 1' },
+                { 'start': '2020-03-26 11:00:00', 'duration': '02:00:00', 'note': 'Schedule 2' },
+                { 'start': '2020-03-26 15:00:00', 'duration': '01:30:00', 'note': 'Schedule 3' },
+                { 'start': '2020-03-26 18:00:00', 'duration': '02:00:00', 'note': 'Schedule 4' },
+                { 'start': '2020-03-26 22:00:00', 'duration': '01:00:00', 'note': 'Schedule 5' }
+              ],
         }
     }
+
     // Firebase Database e eklenen mesajı cektigimiz alan.
     // Firebase Database de notices basligi altindaki userName e gore saklanan verileri cekiyor.
     // Cekilen veriler; UserName, UserId, girilen mesaj(text) ve verinin id si seklinde.
@@ -47,16 +63,11 @@ export class User extends Component {
         return <Notice item={item}/>
     }
     render() {
-        const { text, notices } = this.state;
+        const { text, notices, sampleEvents } = this.state;
         return (
-            <SafeAreaView style={{ flex:1}}>
-                
-                <View>
-                    <Text>
-                        duyuru ekranı
-                    </Text>
-                </View>
-            </SafeAreaView>
+            <View style={style.container}>
+                <WeeklyCalendar events={this.state.sampleEvents} style={{ height: 400 }} />
+            </View>
         )
     }
 }
@@ -69,6 +80,12 @@ const style = StyleSheet.create({
       backgroundColor:'#F7F9FA',
       flex:1
     },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
     input_area:{
       flexDirection:'column',
       justifyContent:'flex-end',
