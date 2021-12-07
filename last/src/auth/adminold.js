@@ -21,19 +21,20 @@ export class Admin extends Component {
     // Firebase Database de notices basligi altindaki userName e gore saklanan verileri cekiyor.
     // Cekilen veriler; UserName, UserId, girilen mesaj(text) ve verinin id si seklinde.
     componentDidMount(){
-        firebase.database().ref(`notices/${firebase.auth().currentUser.uid}`).on('value', snapshot => {
+        /*firebase.database().ref(`notices/${firebase.auth().currentUser.uid}`).on('value', snapshot => {
             var notices = [];
             snapshot.forEach((item) => {
                 notices.push({
                     text:item.val().text,
                     userName:item.val().userName,
                     userId:item.val().userID,
+                    title:item.val().noticeTitle,
                     id:item.key
                 })
             })
             this.setState({notices});
-            console.log(notices) // Database den cekilen verileri gosteriyor.
-        });
+            //console.log(notices) // Database den cekilen verileri gosteriyor.
+        });*/
     }
     // Ekranın altındaki cıkıs yap butonu ile kullanıcı cıkısı yapmayı ve firebase hesabından
     // cıkısı saglayan fonksiyon.
@@ -44,6 +45,8 @@ export class Admin extends Component {
         .then(() => console.log('User signed out!')); // Burası direk giriş ekranına yonlendirecek.
     }
     renderItem = ({ item }) => {
+        console.log(item.text)
+        console.log(item.noticeTitle)
         return <Notice item={item}/>
     }
     // Duyuru giriniz alanına girilen metni firebase database e ekliyor.
@@ -70,8 +73,6 @@ export class Admin extends Component {
         return (
             <SafeAreaView style={{ flex:1}}>
 
-                
-
                 <FlatList // FlatList in sebebi, girilen duyuru kadar ekrana veri basilmasini saglamak.
                 data={notices} // Firebase den cekilen veri renderItem e gonderiliyor.
                     renderItem={this.renderItem} // Veri renderItem ile Notice.js e gidip ekrana text veriliyor.
@@ -82,7 +83,6 @@ export class Admin extends Component {
                     <TouchableOpacity onPress={() => this.signOut()}> 
                             <Icon style={{flex:1}} color={"orange"} name={"window-close"} size={25} />
                         </TouchableOpacity>
-
                         <TextInput
                             value={text}
                             onChangeText={(text) => this.setState({text})}

@@ -16,6 +16,7 @@ export class Admin extends Component {
         super(props);
         this.state = {
             notices:[],
+            noticeTitle:'',
             text:'',
         }
     }
@@ -23,7 +24,7 @@ export class Admin extends Component {
     // Firebase Database de notices basligi altindaki userName e gore saklanan verileri cekiyor.
     // Cekilen veriler; UserName, UserId, girilen mesaj(text) ve verinin id si seklinde.
     componentDidMount(){
-        firebase.database().ref(`notices/${firebase.auth().currentUser.uid}`).on('value', snapshot => {
+        /*firebase.database().ref(`notices/${firebase.auth().currentUser.uid}`).on('value', snapshot => {
             var notices = [];
             snapshot.forEach((item) => {
                 notices.push({
@@ -35,7 +36,7 @@ export class Admin extends Component {
             })
             this.setState({notices});
             console.log(notices) // Database den cekilen verileri gosteriyor.
-        });
+        });*/
     }
     // Ekranın altındaki cıkıs yap butonu ile kullanıcı cıkısı yapmayı ve firebase hesabından
     // cıkısı saglayan fonksiyon.
@@ -45,14 +46,14 @@ export class Admin extends Component {
         .signOut()
         .then(() => console.log('User signed out!')); // Burası direk giriş ekranına yonlendirecek.
     }
-    renderItem = ({ item }) => {
+    /*renderItem = ({ item }) => {
         return <Notice item={item}/>
-    }
+    }*/
     // Duyuru giriniz alanına girilen metni firebase database e ekliyor.
     // Firebase Database ekranında notices basligi altinda userID ye gore ekleniyor.
     // Eklenen data nın icerigi; userName, userID, girilen mesaj(text) seklinde.
     handleSend = () => {
-        const { text } = this.state;
+        const { text, noticeTitle } = this.state;
         const user = firebase.auth().currentUser;
         const userID = user.uid;
         const userName = user.displayName;
@@ -61,14 +62,15 @@ export class Admin extends Component {
         database.push({
             userName,
             userID,
-            text
+            text,
+            noticeTitle
         }).then((result) => {
-            this.setState({ text : ''}) // Girilen metin firebase e aktarilirsa text in icini bosaltiyor.
+            this.setState({ text : '', noticeTitle : ''}) // Girilen metin firebase e aktarilirsa text in icini bosaltiyor.
         }).catch((error) => console.log(error));
     }
 
     render() {
-        const { text, notices } = this.state;
+        const { text,noticeTitle, notices } = this.state;
         return (
             <View style={{ flex:1}}>
 
@@ -76,7 +78,12 @@ export class Admin extends Component {
 <Button onPress={this.handleSend}>
                     <Icon name='adn'></Icon>
                 </Button>
-
+                <Input
+                value={noticeTitle}
+                onChangeText={(noticeTitle) => this.setState({noticeTitle})}
+                placeholder={"Başlık..."}
+                >
+                </Input>
                 <Input
                 value={text}
                 onChangeText={(text) => this.setState({text})}

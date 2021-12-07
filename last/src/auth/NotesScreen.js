@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5'
 
 import firebase from 'firebase'
 import "firebase/database"
+//import "firebase/firebase-firestore"
 import LandingScreen from './Landing'
 import LoginScreen from './Login'
 import Notice from './Notice'
@@ -14,6 +15,7 @@ export class Admin extends Component {
         super(props);
         this.state = {
             notices:[],
+            noticeTitle:'',
             text:'',
         }
     }
@@ -28,11 +30,12 @@ export class Admin extends Component {
                     text:item.val().text,
                     userName:item.val().userName,
                     userId:item.val().userID,
+                    title:item.val.noticeTitle,
                     id:item.key
                 })
             })
             this.setState({notices});
-            console.log(notices) // Database den cekilen verileri gosteriyor.
+            //console.log(notices) // Database den cekilen verileri gosteriyor.
         });
     }
     // Ekranın altındaki cıkıs yap butonu ile kullanıcı cıkısı yapmayı ve firebase hesabından
@@ -50,7 +53,7 @@ export class Admin extends Component {
     // Firebase Database ekranında notices basligi altinda userID ye gore ekleniyor.
     // Eklenen data nın icerigi; userName, userID, girilen mesaj(text) seklinde.
     handleSend = () => {
-        const { text } = this.state;
+        const { text, noticeTitle } = this.state;
         const user = firebase.auth().currentUser;
         const userID = user.uid;
         const userName = user.displayName;
@@ -59,14 +62,15 @@ export class Admin extends Component {
         database.push({
             userName,
             userID,
+            noticeTitle,
             text
         }).then((result) => {
-            this.setState({ text : ''}) // Girilen metin firebase e aktarilirsa text in icini bosaltiyor.
+            this.setState({ text : '', noticeTitle: ''}) // Girilen metin firebase e aktarilirsa text in icini bosaltiyor.
         }).catch((error) => console.log(error));
     }
 
     render() {
-        const { text, notices } = this.state;
+        const { text, noticeTitle, notices } = this.state;
         return (
             <SafeAreaView style={{ flex:1}}>
 
@@ -82,9 +86,14 @@ export class Admin extends Component {
                     <View style={{flexDirection:'row',alignItems:'center',height:25}}>
                     
                     <TouchableOpacity onPress={() => this.signOut()}> 
-                            <Icon style={{flex:1}} color={"orange"} name={"window-close"} size={25} />
+                            <Icon style={{flex:1}} color={"orange"} name={"window-close"} size={20} />
                         </TouchableOpacity>
-
+                        <TextInput
+                            value={noticeTitle}
+                            onChangeText={(noticeTitle) => this.setState({noticeTitle})}
+                            style={style.input2}
+                            placeholder={"Başlık ..."}
+                        />
                         <TextInput
                             value={text}
                             onChangeText={(text) => this.setState({text})}
@@ -92,7 +101,7 @@ export class Admin extends Component {
                             placeholder={"Duyuru ..."}
                         />
                         <TouchableOpacity onPress={this.handleSend}> 
-                            <Icon style={{flex:1}} color={"orange"} name={"paper-plane"} size={25} />
+                            <Icon style={{flex:1}} color={"orange"} name={"paper-plane"} size={20} />
                         </TouchableOpacity>
                         
                     </View>
@@ -161,7 +170,18 @@ const style = StyleSheet.create({
         flex:1,
         height:50,
         borderRadius:10,
-        paddingHorizontal:100,
+        paddingHorizontal:30,
+        marginBottom:10
+        
+    },
+    input2:{
+        
+        backgroundColor:'#F7F7F7',
+        padding:15,
+        flex:1,
+        height:50,
+        borderRadius:10,
+        paddingHorizontal:10,
         marginBottom:10
         
     }
